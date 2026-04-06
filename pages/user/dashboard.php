@@ -12,6 +12,25 @@ requireAuth();
 ?>
 
 <div class="stats-grid">
+    <div class="stat-card" id="emprestadoCard">
+        <span class="stat-label">Total Emprestado</span>
+        <span class="stat-value">-</span>
+    </div>
+    <div class="stat-card" id="recebidoCard">
+        <span class="stat-label">Total Recebido</span>
+        <span class="stat-value positive">-</span>
+    </div>
+    <div class="stat-card" id="lucroCard">
+        <span class="stat-label">Lucro</span>
+        <span class="stat-value text-warning">-</span>
+    </div>
+    <div class="stat-card" id="multasCard">
+        <span class="stat-label">Multas Abertas</span>
+        <span class="stat-value" style="color: #ef4444;">-</span>
+    </div>
+</div>
+
+<div class="stats-grid" style="margin-top: 12px;">
     <div class="stat-card" id="clientesCard">
         <span class="stat-label">Clientes Ativos</span>
         <span class="stat-value">-</span>
@@ -20,13 +39,13 @@ requireAuth();
         <span class="stat-label">Total de Vendas</span>
         <span class="stat-value">-</span>
     </div>
-    <div class="stat-card" id="recebidoCard">
-        <span class="stat-label">Total Recebido</span>
-        <span class="stat-value positive">-</span>
+    <div class="stat-card" id="jurosCard">
+        <span class="stat-label">Total Juros</span>
+        <span class="stat-value" style="color: #8b5cf6;">-</span>
     </div>
-    <div class="stat-card" id="lucroCard">
-        <span class="stat-label">Lucro Estimado</span>
-        <span class="stat-value text-warning">-</span>
+    <div class="stat-card" id="multasPagasCard">
+        <span class="stat-label">Multas Recebidas</span>
+        <span class="stat-value" style="color: #10b981;">-</span>
     </div>
 </div>
 
@@ -67,10 +86,14 @@ function loadDashboard() {
     api('dashboard.resumo').then(res => {
         if (res.sucesso && res.dados) {
             const d = res.dados;
-            document.getElementById('clientesCard').querySelector('.stat-value').textContent = d.total_clientes || 0;
-            document.getElementById('vendasCard').querySelector('.stat-value').textContent = d.total_vendas || 0;
+            document.getElementById('emprestadoCard').querySelector('.stat-value').textContent = formatMoney(d.total_emprestado || 0);
             document.getElementById('recebidoCard').querySelector('.stat-value').textContent = formatMoney(d.total_recebido || 0);
             document.getElementById('lucroCard').querySelector('.stat-value').textContent = formatMoney(d.lucro || 0);
+            document.getElementById('multasCard').querySelector('.stat-value').textContent = formatMoney(d.total_multas_abertas || 0);
+            document.getElementById('clientesCard').querySelector('.stat-value').textContent = d.total_clientes || 0;
+            document.getElementById('vendasCard').querySelector('.stat-value').textContent = d.total_vendas || 0;
+            document.getElementById('jurosCard').querySelector('.stat-value').textContent = formatMoney(d.total_juros || 0);
+            document.getElementById('multasPagasCard').querySelector('.stat-value').textContent = formatMoney(d.total_multas_pagas || 0);
         }
     });
     
@@ -115,6 +138,7 @@ function formatDate(date) {
 }
 
 function escapeHtml(text) {
+    if (text === null || text === undefined) return '';
     const map = {
         '&': '&amp;',
         '<': '&lt;',
@@ -122,7 +146,7 @@ function escapeHtml(text) {
         '"': '&quot;',
         "'": '&#039;'
     };
-    return text.replace(/[&<>"']/g, m => map[m]);
+    return String(text).replace(/[&<>"']/g, m => map[m]);
 }
 
 // Carregar dashboard ao abrir a página

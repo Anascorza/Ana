@@ -72,6 +72,12 @@ $user = currentUser();
                 <a href="<?= BASE_URL ?>/vendas" class="nav-link">
                     <span class="nav-icon">💰</span> Vendas / Cobranças
                 </a>
+                <a href="<?= BASE_URL ?>/parcelas" class="nav-link">
+                    <span class="nav-icon">📅</span> Parcelas
+                </a>
+                <a href="<?= BASE_URL ?>/multas" class="nav-link">
+                    <span class="nav-icon">⚠️</span> Multas
+                </a>
                 
                 <div class="sidebar-footer">
                     <div class="user-info">
@@ -86,9 +92,10 @@ $user = currentUser();
         <main class="main-content">
             <header class="top-bar">
                 <div class="page-info">
-                    <h1 class="page-title" id="page-title">Dashboard</h1>
+                    <h1 class="page-title" id="page-title"><?= $pageTitle ?? 'Dashboard' ?></h1>
                 </div>
                 <div class="top-bar-actions">
                     <span class="date-display"><?= date('d/m/Y') ?></span>
                 </div>
             </header>
+            <div class="content-wrapper">

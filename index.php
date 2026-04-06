@@ -39,13 +39,17 @@ $routes = [
     'pages/user/dashboard' => '/pages/user/dashboard.php',
     'pages/user/clientes' => '/pages/user/clientes.php',
     'pages/user/vendas' => '/pages/user/vendas.php',
+    'pages/user/parcelas' => '/pages/user/parcelas.php',
+    'pages/user/multas' => '/pages/user/multas.php',
     'admin/rutas' => '/pages/admin/rutas.php',
     'admin/movimentacoes' => '/pages/admin/movimentacoes.php',
     'admin/usuarios' => '/pages/admin/usuarios.php',
     'admin/logs' => '/pages/admin/logs.php',
     'admin/dashboard' => '/pages/admin/dashboard_completo.php',
     'clientes' => '/pages/user/clientes.php',
-    'vendas' => '/pages/user/vendas.php'
+    'vendas' => '/pages/user/vendas.php',
+    'parcelas' => '/pages/user/parcelas.php',
+    'multas' => '/pages/user/multas.php'
 ];
 
 // 6. Lógica de Roteamento

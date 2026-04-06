@@ -16,6 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'] ?? '';
 
     if (login($email, $password)) {
+        logAcao('LOGIN', 'Usuário realizou login no sistema', 'usuarios', $_SESSION['user_id']);
         redirectIfAuthenticated();
     } else {
         $error = 'E-mail ou senha incorretos.';
@@ -130,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="error-message"><?= htmlspecialchars($error) ?></div>
         <?php endif; ?>
 
-        <form action="<?= BASE_URL ?>/auth/login.php" method="POST">
+        <form action="<?= BASE_URL ?>/auth/login" method="POST">
             <div class="form-group">
                 <label for="email" class="form-label">E-mail</label>
                 <input type="email" id="email" name="email" class="form-input" placeholder="seu@email.com" required autofocus>

@@ -101,6 +101,52 @@ requireAuth();
     </div>
 </div>
 
+<!-- Modal de Detalhes da Venda -->
+<div id="detalheModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background-color:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center;"></div>
+
+<!-- Modal de Pagamento -->
+<div id="pagamentoModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background-color:rgba(0,0,0,0.5);z-index:1100;align-items:center;justify-content:center;">
+    <div style="background:var(--card-bg);border:1px solid var(--border-color);border-radius:12px;padding:24px;max-width:400px;width:90%;">
+        <h3 style="font-size:18px;font-weight:600;margin-bottom:16px;">Registrar Pagamento</h3>
+        <div style="margin-bottom:16px;">
+            <label style="display:block;margin-bottom:8px;font-size:14px;font-weight:500;color:var(--text-muted);">Valor *</label>
+            <input type="number" id="pagValor" step="0.01" required style="width:100%;padding:10px;background:var(--bg-color);border:1px solid var(--border-color);border-radius:8px;color:var(--text-color);">
+        </div>
+        <div style="margin-bottom:16px;">
+            <label style="display:block;margin-bottom:8px;font-size:14px;font-weight:500;color:var(--text-muted);">Forma de Pagamento</label>
+            <select id="pagForma" style="width:100%;padding:10px;background:var(--bg-color);border:1px solid var(--border-color);border-radius:8px;color:var(--text-color);">
+                <option value="dinheiro">Dinheiro</option>
+                <option value="pix">PIX</option>
+                <option value="transferencia">Transferência</option>
+                <option value="cartao">Cartão</option>
+            </select>
+        </div>
+        <div style="display:flex;gap:12px;">
+            <button type="button" class="btn" style="flex:1;padding:10px;background:var(--border-color);color:var(--text-color);border-radius:8px;cursor:pointer;" onclick="closePagamentoModal()">Cancelar</button>
+            <button type="button" class="btn btn-primary" style="flex:1;padding:10px;border-radius:8px;cursor:pointer;" onclick="savePagamento()">Confirmar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Multa -->
+<div id="multaModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background-color:rgba(0,0,0,0.5);z-index:1100;align-items:center;justify-content:center;">
+    <div style="background:var(--card-bg);border:1px solid var(--border-color);border-radius:12px;padding:24px;max-width:400px;width:90%;">
+        <h3 style="font-size:18px;font-weight:600;margin-bottom:16px;">Aplicar Multa</h3>
+        <div style="margin-bottom:16px;">
+            <label style="display:block;margin-bottom:8px;font-size:14px;font-weight:500;color:var(--text-muted);">Valor da Multa *</label>
+            <input type="number" id="multaValor" step="0.01" required style="width:100%;padding:10px;background:var(--bg-color);border:1px solid var(--border-color);border-radius:8px;color:var(--text-color);">
+        </div>
+        <div style="margin-bottom:16px;">
+            <label style="display:block;margin-bottom:8px;font-size:14px;font-weight:500;color:var(--text-muted);">Motivo</label>
+            <textarea id="multaMotivo" style="width:100%;padding:10px;background:var(--bg-color);border:1px solid var(--border-color);border-radius:8px;color:var(--text-color);resize:vertical;min-height:60px;"></textarea>
+        </div>
+        <div style="display:flex;gap:12px;">
+            <button type="button" class="btn" style="flex:1;padding:10px;background:var(--border-color);color:var(--text-color);border-radius:8px;cursor:pointer;" onclick="closeMultaModal()">Cancelar</button>
+            <button type="button" class="btn btn-primary" style="flex:1;padding:10px;border-radius:8px;cursor:pointer;" onclick="saveMulta()">Aplicar</button>
+        </div>
+    </div>
+</div>
+
 <script>
 function api(action, dados = {}) {
     return fetch('<?= BASE_URL ?>/app/api.php', {
@@ -120,7 +166,7 @@ function loadVendas() {
         
         tbody.innerHTML = res.dados.map(v => `
             <tr>
-                <td>${escapeHtml(v.id)}</td>
+                <td>${escapeHtml(String(v.id))}</td>
                 <td>${escapeHtml(v.cliente_nome || 'Cliente #' + v.cliente_id)}</td>
                 <td>${formatMoney(v.valor_emprestimo)}</td>
                 <td>${formatMoney(v.total_com_juros)}</td>
@@ -165,12 +211,71 @@ function closeVendaModal() {
 
 function viewVenda(id) {
     api('vendas.buscar', { id }).then(res => {
-        if (res.sucesso && res.dados) {
-            const v = res.dados;
-            alert(`Venda #${v.id}\nCliente: ${v.cliente_id}\nValor: R$ ${v.valor_emprestimo}\nParcelas: ${v.parcelas_pagas}/${v.num_parcelas}`);
-        } else {
-            alert('Erro ao carregar venda');
-        }
+        if (!res.sucesso || !res.dados) { alert('Erro ao carregar venda'); return; }
+        const v = res.dados;
+        
+        let html = `<div style="max-width:700px;width:95%;background:var(--card-bg);border:1px solid var(--border-color);border-radius:12px;padding:24px;max-height:90vh;overflow-y:auto;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                <h3 style="font-size:18px;font-weight:600;">Venda #${v.id}</h3>
+                <button onclick="closeDetalheModal()" style="background:none;border:none;font-size:24px;cursor:pointer;color:var(--text-muted);">&times;</button>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+                <div style="background:var(--bg-color);padding:12px;border-radius:8px;"><strong>Valor:</strong> ${formatMoney(v.valor_emprestimo)}</div>
+                <div style="background:var(--bg-color);padding:12px;border-radius:8px;"><strong>Total c/ Juros:</strong> ${formatMoney(v.total_com_juros)}</div>
+                <div style="background:var(--bg-color);padding:12px;border-radius:8px;"><strong>Parcelas:</strong> ${v.parcelas_pagas||0}/${v.num_parcelas}</div>
+                <div style="background:var(--bg-color);padding:12px;border-radius:8px;"><strong>Início:</strong> ${formatDate(v.data_inicio)}</div>
+            </div>
+            <h4 style="margin-bottom:8px;">Parcelas</h4>
+            <div id="detalheParcelasBody" style="margin-bottom:16px;">Carregando...</div>
+            <h4 style="margin-bottom:8px;">Multas</h4>
+            <div id="detalheMultasBody" style="margin-bottom:16px;">Carregando...</div>
+            <div style="display:flex;gap:8px;margin-top:16px;">
+                <button class="btn btn-primary" style="padding:8px 16px;" onclick="openPagamentoModal(${v.id})">Registrar Pagamento</button>
+                <button class="btn" style="padding:8px 16px;background:#f59e0b;color:white;border:none;border-radius:4px;cursor:pointer;" onclick="openMultaModal(${v.id})">Aplicar Multa</button>
+            </div>
+        </div>`;
+        
+        document.getElementById('detalheModal').innerHTML = html;
+        document.getElementById('detalheModal').style.display = 'flex';
+        
+        // Load parcelas
+        api('parcelas.listar', { venda_id: v.id }).then(pr => {
+            const el = document.getElementById('detalheParcelasBody');
+            if (!pr.sucesso || !pr.dados || pr.dados.length === 0) { el.innerHTML = '<p style="color:var(--text-muted);">Nenhuma parcela.</p>'; return; }
+            const today = new Date().toISOString().split('T')[0];
+            el.innerHTML = '<table style="width:100%;font-size:13px;"><thead><tr><th>#</th><th>Vencimento</th><th>Valor</th><th>Status</th><th>Ação</th></tr></thead><tbody>' +
+                pr.dados.map(p => {
+                    let status = p.status;
+                    let color = '#6b7280';
+                    if (p.status === 'pago') { color = '#10b981'; }
+                    else if (p.data_vencimento < today && p.status !== 'pago') { status = 'atrasado'; color = '#ef4444'; }
+                    else if (p.status === 'futuro') { color = '#3b82f6'; }
+                    const canPay = p.status !== 'pago';
+                    return `<tr>
+                        <td>${p.numero}</td>
+                        <td>${formatDate(p.data_vencimento)}</td>
+                        <td>${formatMoney(p.valor)}</td>
+                        <td><span style="padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;color:${color};">${status}</span></td>
+                        <td>${canPay ? `<button class="btn" style="padding:2px 6px;font-size:11px;background:#10b981;color:white;border:none;border-radius:3px;cursor:pointer;" onclick="pagarParcela(${v.id},${p.id},${p.valor})">Pagar</button>` : '-'}</td>
+                    </tr>`;
+                }).join('') + '</tbody></table>';
+        });
+        
+        // Load multas
+        api('multas.listar', { venda_id: v.id }).then(mr => {
+            const el = document.getElementById('detalheMultasBody');
+            if (!mr.sucesso || !mr.dados || mr.dados.length === 0) { el.innerHTML = '<p style="color:var(--text-muted);">Nenhuma multa.</p>'; return; }
+            el.innerHTML = '<table style="width:100%;font-size:13px;"><thead><tr><th>Valor</th><th>Motivo</th><th>Status</th><th>Ação</th></tr></thead><tbody>' +
+                mr.dados.map(m => {
+                    const canPay = m.status === 'aberto';
+                    return `<tr>
+                        <td>${formatMoney(m.valor)}</td>
+                        <td>${escapeHtml(m.motivo || '-')}</td>
+                        <td><span style="color:${m.status === 'pago' ? '#10b981' : '#ef4444'};">${m.status}</span></td>
+                        <td>${canPay ? `<button class="btn" style="padding:2px 6px;font-size:11px;background:#10b981;color:white;border:none;border-radius:3px;cursor:pointer;" onclick="pagarMulta(${v.id},${m.id},${m.valor})">Pagar</button>` : '-'}</td>
+                    </tr>`;
+                }).join('') + '</tbody></table>';
+        });
     });
 }
 
@@ -228,6 +333,7 @@ function saveVenda() {
 }
 
 function escapeHtml(text) {
+    if (text === null || text === undefined) return '';
     const map = {
         '&': '&amp;',
         '<': '&lt;',
@@ -235,7 +341,7 @@ function escapeHtml(text) {
         '"': '&quot;',
         "'": '&#039;'
     };
-    return text.replace(/[&<>"']/g, m => map[m]);
+    return String(text).replace(/[&<>"']/g, m => map[m]);
 }
 
 function formatMoney(value) {
@@ -264,10 +370,70 @@ function showNotification(msg, type) {
     setTimeout(() => div.remove(), 3000);
 }
 
-// Fechar modal ao clicar fora
-document.getElementById('vendaModal').addEventListener('click', function(e) {
-    if (e.target === this) closeVendaModal();
-});
+// === Detalhe Modal ===
+function closeDetalheModal() {
+    document.getElementById('detalheModal').style.display = 'none';
+}
+
+function pagarParcela(vendaId, parcelaId, valor) {
+    if (!confirm('Confirmar pagamento de ' + formatMoney(valor) + '?')) return;
+    api('pagamentos.registrar', { dados: { venda_id: vendaId, parcela_id: parcelaId, valor_pago: valor, forma_pagamento: 'dinheiro' } }).then(res => {
+        if (res.sucesso) { showNotification('Parcela paga com sucesso!', 'success'); viewVenda(vendaId); loadVendas(); }
+        else alert('Erro: ' + res.mensagem);
+    });
+}
+
+function pagarMulta(vendaId, multaId, valor) {
+    if (!confirm('Confirmar pagamento da multa de ' + formatMoney(valor) + '?')) return;
+    api('pagamentos.registrar', { dados: { venda_id: vendaId, multa_id: multaId, valor_pago: valor, forma_pagamento: 'dinheiro' } }).then(res => {
+        if (res.sucesso) { showNotification('Multa paga com sucesso!', 'success'); viewVenda(vendaId); loadVendas(); }
+        else alert('Erro: ' + res.mensagem);
+    });
+}
+
+// === Pagamento Modal ===
+let currentVendaIdPag = null;
+function openPagamentoModal(vendaId) {
+    currentVendaIdPag = vendaId;
+    document.getElementById('pagValor').value = '';
+    document.getElementById('pagForma').value = 'dinheiro';
+    document.getElementById('pagamentoModal').style.display = 'flex';
+}
+function closePagamentoModal() { document.getElementById('pagamentoModal').style.display = 'none'; }
+function savePagamento() {
+    const valor = parseFloat(document.getElementById('pagValor').value);
+    const forma = document.getElementById('pagForma').value;
+    if (!valor || valor <= 0) { alert('Informe um valor válido'); return; }
+    api('pagamentos.registrar', { dados: { venda_id: currentVendaIdPag, valor_pago: valor, forma_pagamento: forma } }).then(res => {
+        if (res.sucesso) { closePagamentoModal(); showNotification('Pagamento registrado!', 'success'); viewVenda(currentVendaIdPag); loadVendas(); }
+        else alert('Erro: ' + res.mensagem);
+    });
+}
+
+// === Multa Modal ===
+let currentVendaIdMulta = null;
+function openMultaModal(vendaId) {
+    currentVendaIdMulta = vendaId;
+    document.getElementById('multaValor').value = '';
+    document.getElementById('multaMotivo').value = '';
+    document.getElementById('multaModal').style.display = 'flex';
+}
+function closeMultaModal() { document.getElementById('multaModal').style.display = 'none'; }
+function saveMulta() {
+    const valor = parseFloat(document.getElementById('multaValor').value);
+    const motivo = document.getElementById('multaMotivo').value || 'Multa manual';
+    if (!valor || valor <= 0) { alert('Informe um valor válido'); return; }
+    api('multas.aplicar', { dados: { venda_id: currentVendaIdMulta, valor: valor, motivo: motivo } }).then(res => {
+        if (res.sucesso) { closeMultaModal(); showNotification('Multa aplicada!', 'success'); viewVenda(currentVendaIdMulta); }
+        else alert('Erro: ' + res.mensagem);
+    });
+}
+
+// Fechar modais ao clicar fora
+document.getElementById('vendaModal').addEventListener('click', function(e) { if (e.target === this) closeVendaModal(); });
+document.getElementById('detalheModal').addEventListener('click', function(e) { if (e.target === this) closeDetalheModal(); });
+document.getElementById('pagamentoModal').addEventListener('click', function(e) { if (e.target === this) closePagamentoModal(); });
+document.getElementById('multaModal').addEventListener('click', function(e) { if (e.target === this) closeMultaModal(); });
 
 // Carregar vendas ao abrir a página
 document.addEventListener('DOMContentLoaded', loadVendas);

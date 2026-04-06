@@ -23,12 +23,12 @@ define('APP_VERSION', '11.0');
 $base_path = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
 define('BASE_URL', $base_path);
 
-// 5. Banco de Dados (Credenciais Atualizadas)
+// 5. Banco de Dados (InfinityFree)
 define('DB_HOST',    'sql302.infinityfree.com');
 define('DB_PORT',    3306);
 define('DB_NAME',    'if0_41425409_rcreditos');
 define('DB_USER',    'if0_41425409');
-define('DB_PASS',    'hollaphy'); 
+define('DB_PASS',    'hollaphy');
 define('DB_CHARSET', 'utf8mb4');
 
 // 6. Timezone e Sessão

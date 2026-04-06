@@ -458,5 +458,3 @@ if ($action === 'pagamentos.registrar') {
 }
 
 resposta(false, 'Ação inválida.');
-
-resposta(false, 'Ação inválida.');

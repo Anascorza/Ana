@@ -10,11 +10,11 @@ requireAuth();
 
 // Verificar se é admin
 if (!isAdmin()) {
-    header('Location: ' . BASE_URL . '/pages/user/dashboard.php');
+    header('Location: ' . BASE_URL . '/dashboard');
     exit;
 }
 
 // Redirecionar para o dashboard completo
-header('Location: ' . BASE_URL . '/pages/admin/dashboard_completo.php');
+header('Location: ' . BASE_URL . '/admin/dashboard');
 exit;
 ?>
