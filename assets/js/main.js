@@ -3,9 +3,9 @@
  * Funções auxiliares e consumo de API
  */
 
-// URLs da API (usando caminho relativo para funcionar com o roteador no InfinityFree)
-const API_URL = './app/api';
-const API_ADMIN_URL = './app/api_admin';
+// URLs da API (usando BASE_URL absoluto para funcionar em qualquer rota)
+const API_URL = (typeof BASE_URL !== 'undefined' ? BASE_URL : '') + '/app/api';
+const API_ADMIN_URL = (typeof BASE_URL !== 'undefined' ? BASE_URL : '') + '/app/api_admin';
 
 /**
  * Realiza uma chamada à API (retorna objeto completo {sucesso, dados, mensagem})
