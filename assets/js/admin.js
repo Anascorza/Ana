@@ -20,7 +20,7 @@ function formatarData(data) {
 
 // Escape HTML para segurança
 function escapeHtml(text) {
-    if (!text) return '';
+    if (text === null || text === undefined) return '';
     const map = {
         '&': '&amp;',
         '<': '&lt;',
@@ -28,7 +28,7 @@ function escapeHtml(text) {
         '"': '&quot;',
         "'": '&#039;'
     };
-    return text.replace(/[&<>"']/g, m => map[m]);
+    return String(text).replace(/[&<>"']/g, m => map[m]);
 }
 
 // Mostrar notificação
