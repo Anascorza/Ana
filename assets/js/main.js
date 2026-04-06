@@ -3,45 +3,30 @@
  * Funções auxiliares e consumo de API
  */
 
-// URL da API (usando caminho relativo para funcionar com o roteador no InfinityFree)
-// Usar caminhos relativos puros para evitar erros de segurança de domínio no navegador
+// URLs da API (usando caminho relativo para funcionar com o roteador no InfinityFree)
 const API_URL = './app/api';
+const API_ADMIN_URL = './app/api_admin';
 
 /**
- * Realiza uma chamada à API
+ * Realiza uma chamada à API (retorna objeto completo {sucesso, dados, mensagem})
  */
-async function api(action, dados = {}) {
-    try {
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                action: action,
-                ...dados
-            })
-        });
+function api(action, dados = {}) {
+    return fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, ...dados })
+    }).then(r => r.json());
+}
 
-        if (!response.ok) {
-            console.error('Erro na resposta da API:', response.status);
-            return null;
-        }
-
-        const result = await response.json();
-        
-        if (!result.sucesso) {
-            console.warn('API retornou erro:', result.mensagem);
-            showNotification(result.mensagem, 'error');
-            return null;
-        }
-
-        return result.dados;
-    } catch (error) {
-        console.error('Erro ao chamar API:', error);
-        showNotification('Erro ao conectar com o servidor', 'error');
-        return null;
-    }
+/**
+ * Realiza uma chamada à API Admin (retorna objeto completo {sucesso, dados, mensagem})
+ */
+function apiAdmin(action, dados = {}) {
+    return fetch(API_ADMIN_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, ...dados })
+    }).then(r => r.json());
 }
 
 /**

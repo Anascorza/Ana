@@ -106,16 +106,8 @@ const tiposMap = {
     'ajuste': 'Ajuste'
 };
 
-function api(action, dados = {}) {
-    return fetch('<?= BASE_URL ?>/app/api_admin.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action, ...dados })
-    }).then(r => r.json());
-}
-
 function loadMovimentacoes() {
-    api('movimentacoes.listar').then(res => {
+    apiAdmin('movimentacoes.listar').then(res => {
         const tbody = document.getElementById('movimentacoesTableBody');
         if (!res.sucesso || !res.dados || res.dados.length === 0) {
             tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">Nenhuma movimentação encontrada.</td></tr>';
@@ -145,7 +137,7 @@ function loadMovimentacoes() {
 }
 
 function loadRutas() {
-    api('rutas.listar').then(res => {
+    apiAdmin('rutas.listar').then(res => {
         const select = document.getElementById('movRuta');
         select.innerHTML = '<option value="">Selecione uma ruta</option>';
         
@@ -191,7 +183,7 @@ function saveMovimentacao() {
         data_mov: dataMov
     };
     
-    api('movimentacoes.salvar', { dados }).then(res => {
+    apiAdmin('movimentacoes.salvar', { dados }).then(res => {
         if (res.sucesso) {
             closeMovimentacaoModal();
             loadMovimentacoes();

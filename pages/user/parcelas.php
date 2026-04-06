@@ -70,14 +70,6 @@ requireAuth();
 </div>
 
 <script>
-function api(action, dados = {}) {
-    return fetch('<?= BASE_URL ?>/app/api.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action, ...dados })
-    }).then(r => r.json());
-}
-
 function loadVendasFiltro() {
     api('vendas.listar').then(res => {
         const select = document.getElementById('filtroVenda');

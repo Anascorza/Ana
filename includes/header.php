@@ -26,6 +26,9 @@ $user = currentUser();
     <!-- Configuração Global para JavaScript -->
     <script>const BASE_URL = '<?= BASE_URL ?>';</script>
     
+    <!-- Scripts Principais (carregados no head para disponibilizar api/apiAdmin antes dos scripts inline) -->
+    <script src="<?= BASE_URL ?>/assets/js/main.js"></script>
+    
     <!-- CSS Principal (Caminhos Absolutos via BASE_URL) -->
     <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/main.css">
     <?php if (isAdmin()): ?>

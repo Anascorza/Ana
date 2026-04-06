@@ -100,14 +100,6 @@ requireAuth();
 </div>
 
 <script>
-function api(action, dados = {}) {
-    return fetch('<?= BASE_URL ?>/app/api.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action, ...dados })
-    }).then(r => r.json());
-}
-
 function loadClientes() {
     api('clientes.listar').then(res => {
         const tbody = document.getElementById('clientesTableBody');

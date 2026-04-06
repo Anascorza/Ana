@@ -3,17 +3,6 @@
  * R.Créditos - Whitesystem
  */
 
-// Função auxiliar para fazer requisições à API
-function api(action, dados = {}) {
-    // Usar caminhos relativos puros para evitar erros de segurança de domínio no navegador
-    const url = './app/api_admin';
-    return fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action, ...dados })
-    }).then(r => r.json());
-}
-
 // Formatação de moeda
 function formatarMoeda(valor) {
     return new Intl.NumberFormat('pt-BR', {

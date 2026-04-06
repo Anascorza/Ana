@@ -88,16 +88,8 @@ if (!isAdmin()) {
 </div>
 
 <script>
-function api(action, dados = {}) {
-    return fetch('<?= BASE_URL ?>/app/api_admin.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action, ...dados })
-    }).then(r => r.json());
-}
-
 function loadOperadores() {
-    api('operadores.listar').then(res => {
+    apiAdmin('operadores.listar').then(res => {
         const select = document.getElementById('rutaOperador');
         select.innerHTML = '<option value="">Selecione um operador</option>';
         
@@ -113,7 +105,7 @@ function loadOperadores() {
 }
 
 function loadRutas() {
-    api('rutas.listar').then(res => {
+    apiAdmin('rutas.listar').then(res => {
         const tbody = document.getElementById('rutasTableBody');
         if (!res.sucesso || !res.dados || res.dados.length === 0) {
             tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">Nenhuma ruta encontrada.</td></tr>';
@@ -154,7 +146,7 @@ function closeRutaModal() {
 }
 
 function editRuta(id) {
-    api('rutas.buscar', { id }).then(res => {
+    apiAdmin('rutas.buscar', { id }).then(res => {
         if (!res.sucesso || !res.dados) {
             alert('Erro ao carregar ruta');
             return;
@@ -176,7 +168,7 @@ function editRuta(id) {
 function deleteRuta(id) {
     if (!confirm('Tem certeza que deseja deletar esta ruta?')) return;
     
-    api('rutas.excluir', { id }).then(res => {
+    apiAdmin('rutas.excluir', { id }).then(res => {
         if (res.sucesso) {
             showNotification('Ruta deletada com sucesso!', 'success');
             loadRutas();
@@ -205,7 +197,7 @@ function saveRuta() {
         ativa: document.getElementById('rutaAtiva').checked ? 1 : 0
     };
     
-    api('rutas.salvar', { dados }).then(res => {
+    apiAdmin('rutas.salvar', { dados }).then(res => {
         if (res.sucesso) {
             closeRutaModal();
             loadRutas();

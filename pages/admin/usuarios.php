@@ -211,16 +211,8 @@ if (!isAdmin()) {
 </style>
 
 <script>
-function api(action, dados = {}) {
-    return fetch('<?= BASE_URL ?>/app/api_admin.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action, ...dados })
-    }).then(r => r.json());
-}
-
 function loadUsuarios() {
-    api('operadores.listar').then(res => {
+    apiAdmin('operadores.listar').then(res => {
         const tbody = document.getElementById('usuariosTableBody');
         if (!res.sucesso || !res.dados) {
             tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">Nenhum operador encontrado.</td></tr>';
@@ -262,7 +254,7 @@ function closeUsuarioModal() {
 }
 
 function editUsuario(id) {
-    api('operadores.buscar', { id }).then(res => {
+    apiAdmin('operadores.buscar', { id }).then(res => {
         if (!res.sucesso || !res.dados) {
             alert('Erro ao carregar operador');
             return;
@@ -299,7 +291,7 @@ function saveUsuario() {
         return;
     }
     
-    api('operadores.salvar', { dados }).then(res => {
+    apiAdmin('operadores.salvar', { dados }).then(res => {
         if (res.sucesso) {
             closeUsuarioModal();
             loadUsuarios();
@@ -313,7 +305,7 @@ function saveUsuario() {
 function deleteUsuario(id) {
     if (!confirm('Tem certeza que deseja excluir este operador?')) return;
     
-    api('operadores.excluir', { id }).then(res => {
+    apiAdmin('operadores.excluir', { id }).then(res => {
         if (res.sucesso) {
             loadUsuarios();
             alert('Operador excluído com sucesso!');

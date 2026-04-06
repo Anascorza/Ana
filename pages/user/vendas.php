@@ -148,14 +148,6 @@ requireAuth();
 </div>
 
 <script>
-function api(action, dados = {}) {
-    return fetch('<?= BASE_URL ?>/app/api.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action, ...dados })
-    }).then(r => r.json());
-}
-
 function loadVendas() {
     api('vendas.listar').then(res => {
         const tbody = document.getElementById('vendasTableBody');

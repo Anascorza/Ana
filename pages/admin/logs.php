@@ -109,16 +109,8 @@ if (!isAdmin()) {
 <script>
 let allLogs = [];
 
-function api(action, dados = {}) {
-    return fetch('<?= BASE_URL ?>/app/api_admin.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action, ...dados })
-    }).then(r => r.json());
-}
-
 function loadFiltros() {
-    api('logs.filtros').then(res => {
+    apiAdmin('logs.filtros').then(res => {
         if (res.sucesso && res.dados) {
             const selectUsuario = document.getElementById('filtroUsuario');
             res.dados.usuarios.forEach(u => {
@@ -159,7 +151,7 @@ function loadLogs() {
     const tbody = document.getElementById('logsTableBody');
     tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 20px;">Buscando logs no servidor...</td></tr>';
     
-    api('logs.listar', { filtros }).then(res => {
+    apiAdmin('logs.listar', { filtros }).then(res => {
         if (!res.sucesso || !res.dados || res.dados.length === 0) {
             tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 20px;">Nenhum registro de log encontrado para os filtros aplicados.</td></tr>';
             return;
