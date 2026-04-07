@@ -54,7 +54,7 @@ if ($action === 'dashboard.resumo') {
             (SELECT COUNT(*) FROM rutas WHERE usuario_id IN (SELECT id FROM usuarios WHERE admin_id = ?)) as total_rutas,
             (SELECT COUNT(*) FROM clientes WHERE usuario_id IN (SELECT id FROM usuarios WHERE admin_id = ?)) as total_clientes,
             (SELECT COALESCE(SUM(valor_emprestimo), 0) FROM vendas WHERE usuario_id IN (SELECT id FROM usuarios WHERE admin_id = ?)) as total_emprestado,
-            (SELECT COALESCE(SUM(valor), 0) FROM pagamentos WHERE venda_id IN (SELECT id FROM vendas WHERE usuario_id IN (SELECT id FROM usuarios WHERE admin_id = ?))) as total_recebido,
+            (SELECT COALESCE(SUM(valor_pago), 0) FROM pagamentos WHERE venda_id IN (SELECT id FROM vendas WHERE usuario_id IN (SELECT id FROM usuarios WHERE admin_id = ?))) as total_recebido,
             (SELECT COALESCE(SUM(juros_valor), 0) FROM vendas WHERE usuario_id IN (SELECT id FROM usuarios WHERE admin_id = ?)) as total_juros,
             (SELECT COALESCE(SUM(valor), 0) FROM multas WHERE status = "aberto" AND venda_id IN (SELECT id FROM vendas WHERE usuario_id IN (SELECT id FROM usuarios WHERE admin_id = ?))) as total_multas_abertas
     ');
