@@ -192,8 +192,8 @@ if ($action === 'rutas.salvar') {
         
         if (!$rutaAntiga) resposta(false, 'Ruta não encontrada.');
         
-        $stmt = $db->prepare('UPDATE rutas SET nome = ?, descricao = ?, capital_base = ?, ativa = ? WHERE id = ?');
-        $stmt->execute([$d['nome'], $d['descricao'] ?? null, $d['capital_base'] ?? 0, $d['ativa'] ?? 1, $d['id']]);
+        $stmt = $db->prepare('UPDATE rutas SET usuario_id = ?, nome = ?, descricao = ?, capital_base = ?, ativa = ? WHERE id = ?');
+        $stmt->execute([$d['usuario_id'], $d['nome'], $d['descricao'] ?? null, $d['capital_base'] ?? 0, $d['ativa'] ?? 1, $d['id']]);
         
         logAcao('EDITAR_RUTA', "Editou ruta: " . $d['nome'], 'rutas', $d['id'], $rutaAntiga, $d);
         resposta(true, 'Ruta atualizada com sucesso.');
